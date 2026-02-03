@@ -18,6 +18,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         // simple comment
         enableEdgeToEdge()
+
         setContent {
             InnovationDayTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
