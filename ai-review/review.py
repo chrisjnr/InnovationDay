@@ -11,7 +11,7 @@ from github.PullRequest import PullRequest
 # Environment
 # ---------------------------
 MODEL = os.environ["LLM_MODEL"]
-OPENAI_KEY = "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"
+OPENAI_KEY = "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"
 GH_TOKEN = os.environ["GITHUB_TOKEN"]
 PR_NUMBER = int(os.environ["PR_NUMBER"])
 REPO_NAME = os.environ["GITHUB_REPOSITORY"]
