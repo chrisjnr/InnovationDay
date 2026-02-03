@@ -22,7 +22,7 @@ with open("ai-review/architecture_rules.md") as f:
     arch_rules = f.read()
 
 # === GET DIFF ===
-diff = subprocess.check_output(["git", "diff", "origin/main...HEAD"]).decode()
+diff = subprocess.check_output(["git", "diff", "origin/master...HEAD"]).decode()
 
 # === PREPARE PROMPT ===
 system_prompt = """
