@@ -17,6 +17,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // simple comment
+        // another one
         // TODO:  has to be
         enableEdgeToEdge()
         setContent {
