@@ -16,6 +16,5 @@ jobs:
         id: pragent
         uses: qodo-ai/pr-agent@main
         env:
-          OPENAI_KEY: 5e18207b594646eea25b0f7be39f2726
+          OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          OPENAI__API_BASE: https://openai-dev-semanticsearch-01-swedencentral.openai.azure.com/openai/v1/chat/completions?api-version=v1

@@ -1,0 +1,38 @@
+name: AI Pull Request Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  ai-review:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          pip install openai pygithub
+
+      - name: Run AI Review
+        id: aireview
+        run: |
+          python ai-review/review.py
+        env:
+          OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          LLM_MODEL: "gpt-4o-mini"
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+
+      - name: Fail if AI found critical issues
+        if: steps.aireview.outputs.fail == 'true'
+        run: |
+          echo "❌ Critical architecture issues detected. Failing."
+          exit 1
