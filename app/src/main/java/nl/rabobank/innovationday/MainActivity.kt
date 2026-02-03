@@ -17,6 +17,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // simple comment
+        // TODO:  has to be
         enableEdgeToEdge()
         setContent {
             InnovationDayTheme {
@@ -37,11 +38,13 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
         text = "Hello $name!",
         modifier = modifier
     )
+    // TODO: another
 }
 
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
+    // cmore comments
     InnovationDayTheme {
         Greeting("Android")
     }
