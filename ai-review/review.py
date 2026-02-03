@@ -6,7 +6,6 @@ from typing import Optional, Dict, Any, List
 from openai import OpenAI
 from github import Github
 from github.PullRequest import PullRequest
-from github.PullRequestFile import PullRequestFile
 
 
 # ---------------------------
