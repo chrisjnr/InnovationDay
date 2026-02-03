@@ -1,94 +1,66 @@
 import os
 import json
-import subprocess
-from openai import OpenAI
 import re
+from typing import Optional, Dict, Any, List
+
+from openai import OpenAI
 from github import Github
+from github.PullRequest import PullRequest
+from github.PullRequestFile import PullRequestFile
 
 
-
-# === ENV VARS ===
+# ---------------------------
+# Env & configuration
+# ---------------------------
 MODEL = os.environ["LLM_MODEL"]
 OPENAI_KEY = "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"
 GH_TOKEN = os.environ["GITHUB_TOKEN"]
 PR_NUMBER = int(os.environ["PR_NUMBER"])
 REPO_NAME = os.environ["GITHUB_REPOSITORY"]
 
-# === LOAD TEMPLATES ===
-with open("ai-review/pr_review_template.md") as f:
-    pr_template = f.read()
+GITHUB_OUTPUT_PATH = os.environ.get("GITHUB_OUTPUT")  # For step outputs
 
-with open("ai-review/architecture_rules.md") as f:
-    arch_rules = f.read()
 
-# === GET DIFF ===
-diff = subprocess.check_output(["git", "diff", "origin/master...HEAD"]).decode()
+# ---------------------------
+# Helpers
+# ---------------------------
+def load_text(path: str) -> str:
+    with open(path, "r", encoding="utf-8") as f:
+        return f.read()
 
-# === PREPARE PROMPT ===
-system_prompt = """
-You are a senior principal engineer performing a Pull Request review.
 
-You MUST output valid JSON with this structure:
+def safe_json_from_text(text: str) -> Dict[str, Any]:
+    """
+    Tries to extract a JSON object from the model response.
+    Accepts:
+      - raw JSON
+      - JSON fenced in ```json ... ```
+      - JSON embedded in text (extracts the first {...} block)
+    """
+    text = text.strip()
 
-{
-  "summary": "<text>",
-  "inline_comments": [
-    {
-      "file": "path/to/file",
-      "line": 123,
-      "comment": "<your comment>",
-      "severity": "info | warning | critical"
-    }
-  ],
-  "critical_issues": [
-    "<description>"
-  ]
-}
+    # Fenced code block
+    fence = re.search(r"```(?:json)?\s*([\s\S]*?)```", text, re.IGNORECASE)
+    if fence:
+        candidate = fence.group(1).strip()
+        try:
+            return json.loads(candidate)
+        except Exception:
+            pass
 
-Rules:
-- Apply the PR Review Template AND Architecture Rules.
-- Comment only on changed files/lines found in the diff.
-- Do NOT invent lines or files.
-- Mark architecture violations as severity=critical.
-"""
+    # Direct JSON
+    try:
+        return json.loads(text)
+    except Exception:
+        pass
 
-client = OpenAI(api_key=OPENAI_KEY)
+    # Extract first { ... } block
+    brace_start = text.find("{")
+    brace_end = text.rfind("}")
+    if brace_start != -1 and brace_end != -1 and brace_end > brace_start:
+        candidate = text[brace_start: brace_end + 1]
+        try:
+            return json.loads(candidate)
+        except Exception:
+            pass
 
-response = client.chat.completions.create(
-    model=MODEL,
-    temperature=0,
-    messages=[
-        {"role": "system", "content": system_prompt},
-        {"role": "system", "content": pr_template},
-        {"role": "system", "content": arch_rules},
-        {"role": "user", "content": diff}
-    ]
-)
-
-result = json.loads(response.choices[0].message["content"])
-
-summary = result["summary"]
-inline_comments = result["inline_comments"]
-critical_issues = result["critical_issues"]
-
-g = Github(GH_TOKEN)
-repo = g.get_repo(REPO_NAME)
-pr = repo.get_pull(PR_NUMBER)
-
-# === POST SUMMARY COMMENT ===
-pr.create_issue_comment(f"### 🧠 AI Review Summary\n\n{summary}")
-
-# === POST INLINE COMMENTS ===
-for c in inline_comments:
-    pr.create_review_comment(
-        body=c["comment"],
-        commit_id=pr.head.sha,
-        path=c["file"],
-        position=c["line"]
-    )
-
-# === OUTPUT FAIL FLAG ===
-if len(critical_issues) > 0:
-    print("::set-output name=fail::true")
-else:
-    print("::set-output name=fail::false")
