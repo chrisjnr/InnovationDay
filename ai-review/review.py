@@ -9,7 +9,7 @@ from github import Github
 
 # === ENV VARS ===
 MODEL = os.environ["LLM_MODEL"]
-OPENAI_KEY = os.environ["OPENAI_API_KEY"]
+OPENAI_KEY = os.environ["OPENAI_KEY"]
 GH_TOKEN = os.environ["GITHUB_TOKEN"]
 PR_NUMBER = int(os.environ["PR_NUMBER"])
 REPO_NAME = os.environ["GITHUB_REPOSITORY"]
