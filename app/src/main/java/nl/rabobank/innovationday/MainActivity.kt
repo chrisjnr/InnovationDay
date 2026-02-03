@@ -14,6 +14,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import nl.rabobank.innovationday.ui.theme.InnovationDayTheme
 
 class MainActivity : ComponentActivity() {
+    // todo:  clean uo
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // simple comment
