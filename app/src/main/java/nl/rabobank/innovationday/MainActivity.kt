@@ -16,6 +16,7 @@ import nl.rabobank.innovationday.ui.theme.InnovationDayTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // simple comment
         enableEdgeToEdge()
         setContent {
             InnovationDayTheme {
