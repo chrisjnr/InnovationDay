@@ -10,7 +10,7 @@ jobs:
       - name: PR Agent action step
         uses: Codium-ai/pr-agent@main
         env:
-          OPENAI_KEY: ${{ secrets.OPENAI_KEY }}
+          OPENAI_KEY: 5e18207b594646eea25b0f7be39f2726
           GITHUB_TOKEN: ${{ secrets.GHUB_TOKEN }}
           OPENAI__API_BASE: https://openai-dev-semanticsearch-01-swedencentral.openai.azure.com/openai/v1/chat/completions?api-version=v1
           OPENAI__KEY: 5e18207b594646eea25b0f7be39f2726
